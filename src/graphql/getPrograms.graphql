@@ -1,0 +1,33 @@
+query getPrograms {
+    programs {
+        title
+        description
+        image {
+            fileName
+            url
+        }
+        workouts {
+            title
+            description
+            bodyPart
+            image {
+                fileName
+                url
+            }
+            exercises {
+                title
+                description
+                duration
+                repetitions
+                steps {
+                    title
+                }
+                image {
+                    fileName
+                    url
+                }
+                videoUrl
+            }
+        }
+    }
+}

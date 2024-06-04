@@ -13,6 +13,10 @@
 /.next/
 /out/
 
+# webstorm
+/.idea
+.idea
+
 # production
 /build
 
