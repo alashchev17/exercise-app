@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { sdk } from "@/lib/client";
-import { IProgram } from "@/lib/models/IProgram";
-import { IWorkout } from "@/lib/models/IWorkout";
 import Link from "next/link";
+
+import { sdk } from "@/lib/client";
 
 interface ProgramPageProps {
   params: {
@@ -12,7 +11,7 @@ interface ProgramPageProps {
 
 async function getProgramById(
   programId: string,
-): Promise<IProgram | undefined | null> {
+) {
   const response = await sdk.getProgram({ programId });
   return response.data.program;
 }
@@ -33,10 +32,10 @@ export async function generateMetadata({
 }
 
 export default async function ProgramPage({ params }: ProgramPageProps) {
-  const program: IProgram | undefined | null = await getProgramById(
+  const program = await getProgramById(
     params.programId,
   );
-  const workouts: IWorkout[] | undefined = program?.workouts;
+  const workouts = program?.workouts;
 
   if (!program) {
     return (
