@@ -5,10 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 7777",
     "lint": "next lint",
     "codegen": "gql-gen --config codegen.ts",
-    "deploy": "npm run build && npm run start -p 7777"
+    "deploy": "npm run build && npm run start"
   },
   "dependencies": {
     "graphql-request": "^6.1.0",
