@@ -16,6 +16,7 @@ export const WorkoutCard = ({ workout }: WorkoutCardProps) => {
         <div className="flex flex-col gap-2">
           <Heading level={6}>{title}</Heading>
           <Paragraph>{description}</Paragraph>
+          <Paragraph>Body part: {bodyPart}</Paragraph>
         </div>
         <Image src={image?.url!} width={75} height={75} alt={title!} className="object-cover w-[75px] h-[75px] rounded-xl" />
       </div>

@@ -3,7 +3,6 @@ import type { Metadata } from 'next'
 import { sdk } from '@/lib/client'
 import { Heading } from '@/components/UI/Heading'
 import { TransitionLink } from '@/components/UI/TransitionLink'
-import { WorkoutCard } from '@/components/WorkoutCard'
 import { ExerciseCard } from '@/components/ExerciseCard'
 
 interface ProgramPageProps {
@@ -60,7 +59,7 @@ export default async function WorkoutPage({ params }: ProgramPageProps) {
         ))}
       </div>
       <TransitionLink
-        href={`/exercises/${exercises[0].id}`}
+        href={`/workouts/${workout.id}/exercises/${exercises[0].id}`}
         className="fixed left-4 bottom-4 w-[calc(100%-2rem)] px-6 py-4 bg-zinc-800 text-white font-semibold shadow-lg z-10"
         label="Start Workout Session"
       />
