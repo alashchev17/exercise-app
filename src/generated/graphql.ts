@@ -6019,22 +6019,62 @@ export enum _SystemDateTimeFieldVariation {
   Localization = 'localization'
 }
 
+export type GetExerciseQueryVariables = Exact<{
+  exerciseId: Scalars['ID']['input'];
+}>;
+
+
+export type GetExerciseQuery = { __typename?: 'Query', exercises: Array<{ __typename?: 'Exercise', id: string, title?: string | null, description?: string | null, repetitions?: number | null, duration?: number | null, videoUrl?: string | null, image?: { __typename?: 'Asset', fileName: string, url: string } | null, steps: Array<{ __typename?: 'Step', id: string, title?: string | null }> }> };
+
 export type GetProgramQueryVariables = Exact<{
   programId: Scalars['ID']['input'];
 }>;
 
 
-export type GetProgramQuery = { __typename?: 'Query', program?: { __typename?: 'Program', title?: string | null, description?: string | null, image?: { __typename?: 'Asset', fileName: string, url: string } | null, workouts: Array<{ __typename?: 'Workout', title?: string | null, description?: string | null, bodyPart?: string | null, image?: { __typename?: 'Asset', fileName: string, url: string } | null, exercises: Array<{ __typename?: 'Exercise', title?: string | null, description?: string | null, videoUrl?: string | null, duration?: number | null, repetitions?: number | null, steps: Array<{ __typename?: 'Step', title?: string | null }>, image?: { __typename?: 'Asset', fileName: string, url: string } | null }> }> } | null };
+export type GetProgramQuery = { __typename?: 'Query', program?: { __typename?: 'Program', id: string, title?: string | null, description?: string | null, image?: { __typename?: 'Asset', fileName: string, url: string } | null, workouts: Array<{ __typename?: 'Workout', id: string, title?: string | null, description?: string | null, bodyPart?: string | null, image?: { __typename?: 'Asset', fileName: string, url: string } | null, exercises: Array<{ __typename?: 'Exercise', id: string, title?: string | null, description?: string | null, duration?: number | null, repetitions?: number | null, videoUrl?: string | null, steps: Array<{ __typename?: 'Step', id: string, title?: string | null }>, image?: { __typename?: 'Asset', fileName: string, url: string } | null }> }> } | null };
 
 export type GetProgramsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetProgramsQuery = { __typename?: 'Query', programs: Array<{ __typename?: 'Program', title?: string | null, description?: string | null, image?: { __typename?: 'Asset', fileName: string, url: string } | null, workouts: Array<{ __typename?: 'Workout', title?: string | null, description?: string | null, bodyPart?: string | null, image?: { __typename?: 'Asset', fileName: string, url: string } | null, exercises: Array<{ __typename?: 'Exercise', title?: string | null, description?: string | null, duration?: number | null, repetitions?: number | null, videoUrl?: string | null, steps: Array<{ __typename?: 'Step', title?: string | null }>, image?: { __typename?: 'Asset', fileName: string, url: string } | null }> }> }> };
+export type GetProgramsQuery = { __typename?: 'Query', programs: Array<{ __typename?: 'Program', id: string, title?: string | null, description?: string | null, image?: { __typename?: 'Asset', fileName: string, url: string } | null, workouts: Array<{ __typename?: 'Workout', id: string, title?: string | null, description?: string | null, bodyPart?: string | null, image?: { __typename?: 'Asset', fileName: string, url: string } | null, exercises: Array<{ __typename?: 'Exercise', id: string, title?: string | null, description?: string | null, duration?: number | null, repetitions?: number | null, videoUrl?: string | null, steps: Array<{ __typename?: 'Step', id: string, title?: string | null }>, image?: { __typename?: 'Asset', fileName: string, url: string } | null }> }> }> };
+
+export type GetWorkoutQueryVariables = Exact<{
+  workoutId: Scalars['ID']['input'];
+}>;
 
 
+export type GetWorkoutQuery = { __typename?: 'Query', workout?: { __typename?: 'Workout', id: string, title?: string | null, description?: string | null, bodyPart?: string | null, image?: { __typename?: 'Asset', fileName: string, url: string } | null, exercises: Array<{ __typename?: 'Exercise', id: string, title?: string | null, description?: string | null, duration?: number | null, repetitions?: number | null, videoUrl?: string | null, steps: Array<{ __typename?: 'Step', id: string, title?: string | null }>, image?: { __typename?: 'Asset', fileName: string, url: string } | null }> } | null };
+
+export type GetWorkoutsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetWorkoutsQuery = { __typename?: 'Query', workouts: Array<{ __typename?: 'Workout', id: string, title?: string | null, description?: string | null, bodyPart?: string | null, image?: { __typename?: 'Asset', fileName: string, url: string } | null, exercises: Array<{ __typename?: 'Exercise', id: string, title?: string | null, description?: string | null, duration?: number | null, repetitions?: number | null, videoUrl?: string | null, steps: Array<{ __typename?: 'Step', id: string, title?: string | null }>, image?: { __typename?: 'Asset', fileName: string, url: string } | null }> }> };
+
+
+export const GetExerciseDocument = gql`
+    query getExercise($exerciseId: ID!) {
+  exercises(where: {id: $exerciseId}) {
+    id
+    title
+    description
+    repetitions
+    duration
+    image {
+      fileName
+      url
+    }
+    videoUrl
+    steps {
+      id
+      title
+    }
+  }
+}
+    `;
 export const GetProgramDocument = gql`
     query getProgram($programId: ID!) {
   program(where: {id: $programId}) {
+    id
     title
     description
     image {
@@ -6042,6 +6082,7 @@ export const GetProgramDocument = gql`
       url
     }
     workouts {
+      id
       title
       description
       bodyPart
@@ -6050,9 +6091,13 @@ export const GetProgramDocument = gql`
         url
       }
       exercises {
+        id
         title
         description
+        duration
+        repetitions
         steps {
+          id
           title
         }
         image {
@@ -6060,8 +6105,6 @@ export const GetProgramDocument = gql`
           url
         }
         videoUrl
-        duration
-        repetitions
       }
     }
   }
@@ -6070,6 +6113,7 @@ export const GetProgramDocument = gql`
 export const GetProgramsDocument = gql`
     query getPrograms {
   programs {
+    id
     title
     description
     image {
@@ -6077,19 +6121,22 @@ export const GetProgramsDocument = gql`
       url
     }
     workouts {
+      id
       title
       description
+      bodyPart
       image {
         fileName
         url
       }
-      bodyPart
       exercises {
+        id
         title
         description
         duration
         repetitions
         steps {
+          id
           title
         }
         image {
@@ -6098,6 +6145,66 @@ export const GetProgramsDocument = gql`
         }
         videoUrl
       }
+    }
+  }
+}
+    `;
+export const GetWorkoutDocument = gql`
+    query getWorkout($workoutId: ID!) {
+  workout(where: {id: $workoutId}) {
+    id
+    title
+    description
+    bodyPart
+    image {
+      fileName
+      url
+    }
+    exercises {
+      id
+      title
+      description
+      duration
+      repetitions
+      steps {
+        id
+        title
+      }
+      image {
+        fileName
+        url
+      }
+      videoUrl
+    }
+  }
+}
+    `;
+export const GetWorkoutsDocument = gql`
+    query getWorkouts {
+  workouts {
+    id
+    title
+    description
+    bodyPart
+    image {
+      fileName
+      url
+    }
+    exercises {
+      id
+      title
+      description
+      duration
+      repetitions
+      steps {
+        id
+        title
+      }
+      image {
+        fileName
+        url
+      }
+      videoUrl
     }
   }
 }
@@ -6107,15 +6214,27 @@ export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, str
 
 
 const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationType, _variables) => action();
+const GetExerciseDocumentString = print(GetExerciseDocument);
 const GetProgramDocumentString = print(GetProgramDocument);
 const GetProgramsDocumentString = print(GetProgramsDocument);
+const GetWorkoutDocumentString = print(GetWorkoutDocument);
+const GetWorkoutsDocumentString = print(GetWorkoutsDocument);
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
+    getExercise(variables: GetExerciseQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<{ data: GetExerciseQuery; errors?: GraphQLError[]; extensions?: any; headers: Headers; status: number; }> {
+        return withWrapper((wrappedRequestHeaders) => client.rawRequest<GetExerciseQuery>(GetExerciseDocumentString, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getExercise', 'query', variables);
+    },
     getProgram(variables: GetProgramQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<{ data: GetProgramQuery; errors?: GraphQLError[]; extensions?: any; headers: Headers; status: number; }> {
         return withWrapper((wrappedRequestHeaders) => client.rawRequest<GetProgramQuery>(GetProgramDocumentString, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getProgram', 'query', variables);
     },
     getPrograms(variables?: GetProgramsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<{ data: GetProgramsQuery; errors?: GraphQLError[]; extensions?: any; headers: Headers; status: number; }> {
         return withWrapper((wrappedRequestHeaders) => client.rawRequest<GetProgramsQuery>(GetProgramsDocumentString, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getPrograms', 'query', variables);
+    },
+    getWorkout(variables: GetWorkoutQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<{ data: GetWorkoutQuery; errors?: GraphQLError[]; extensions?: any; headers: Headers; status: number; }> {
+        return withWrapper((wrappedRequestHeaders) => client.rawRequest<GetWorkoutQuery>(GetWorkoutDocumentString, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getWorkout', 'query', variables);
+    },
+    getWorkouts(variables?: GetWorkoutsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<{ data: GetWorkoutsQuery; errors?: GraphQLError[]; extensions?: any; headers: Headers; status: number; }> {
+        return withWrapper((wrappedRequestHeaders) => client.rawRequest<GetWorkoutsQuery>(GetWorkoutsDocumentString, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getWorkouts', 'query', variables);
     }
   };
 }

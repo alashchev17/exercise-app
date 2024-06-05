@@ -5,55 +5,44 @@ import { Heading } from '@/components/UI/Heading'
 import { TransitionLink } from '@/components/UI/TransitionLink'
 import { WorkoutCard } from '@/components/WorkoutCard'
 
-interface ProgramPageProps {
-  params: {
-    programId: string
-  }
+async function getWorkouts() {
+  const response = await sdk.getWorkouts()
+  return response.data.workouts
 }
 
-async function getProgramById(programId: string) {
-  const response = await sdk.getProgram({ programId })
-  return response.data.program
-}
-
-export async function generateMetadata({ params }: ProgramPageProps): Promise<Metadata> {
-  const program = await getProgramById(params.programId)
-  if (!program) {
+export async function generateMetadata(): Promise<Metadata> {
+  const workouts = await getWorkouts()
+  if (!workouts) {
     return {
-      title: 'Program not found',
+      title: '404 Not Found',
     }
   }
 
   return {
-    title: `Program | ${program.title}`,
+    title: `All Workouts`,
   }
 }
 
-export default async function ProgramPage({ params }: ProgramPageProps) {
-  const program = await getProgramById(params.programId)
+export default async function WorkoutsPage() {
+  const workouts = await getWorkouts()
 
-  if (!program) {
+  if (!workouts) {
     return (
       <main className={`flex min-h-[calc(100dvh-70px)] flex-col items-center gap-6 pt-[calc(2rem+70px)] px-6`}>
-        Program which you are looking for does not exist
+        Something went wrong.
         <TransitionLink href={'/'}>Go back</TransitionLink>
       </main>
     )
   }
 
-  const workouts = program.workouts
-
   return (
     <main className={`flex min-h-[calc(100dvh-70px)] flex-col items-center gap-6 pt-[calc(2rem+70px)] px-6`}>
-      <Heading level={6} className="w-full text-center pb-4 text-zinc-400 border-b">
-        {program.title}
-      </Heading>
       <Heading level={1} className="text-center">
         Available Workouts
       </Heading>
       <div className="w-full flex flex-col items-stretch gap-4">
         {workouts.map((workout) => (
-          <TransitionLink key={workout.title} href={`/workouts/${workout.id}`}>
+          <TransitionLink key={workout.id} href={`/workouts/${workout.id}`}>
             <WorkoutCard workout={workout} />
           </TransitionLink>
         ))}

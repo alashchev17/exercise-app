@@ -7,17 +7,17 @@ import { WorkoutCard } from '@/components/WorkoutCard'
 
 interface ProgramPageProps {
   params: {
-    programId: string
+    exerciseId: string
   }
 }
 
-async function getProgramById(programId: string) {
-  const response = await sdk.getProgram({ programId })
-  return response.data.program
+async function getExerciseById(exerciseId: string) {
+  const response = await sdk.getExercise({ exerciseId })
+  return response.data.exercises[0]
 }
 
 export async function generateMetadata({ params }: ProgramPageProps): Promise<Metadata> {
-  const program = await getProgramById(params.programId)
+  const program = await getExerciseById(params.exerciseId)
   if (!program) {
     return {
       title: 'Program not found',
@@ -25,39 +25,27 @@ export async function generateMetadata({ params }: ProgramPageProps): Promise<Me
   }
 
   return {
-    title: `Program | ${program.title}`,
+    title: `Exercise | ${program.title}`,
   }
 }
 
-export default async function ProgramPage({ params }: ProgramPageProps) {
-  const program = await getProgramById(params.programId)
+export default async function ExercisePage({ params }: ProgramPageProps) {
+  const exercise = await getExerciseById(params.exerciseId)
 
-  if (!program) {
+  if (!exercise) {
     return (
       <main className={`flex min-h-[calc(100dvh-70px)] flex-col items-center gap-6 pt-[calc(2rem+70px)] px-6`}>
-        Program which you are looking for does not exist
+        Exercise which you are looking for does not exist
         <TransitionLink href={'/'}>Go back</TransitionLink>
       </main>
     )
   }
 
-  const workouts = program.workouts
-
   return (
     <main className={`flex min-h-[calc(100dvh-70px)] flex-col items-center gap-6 pt-[calc(2rem+70px)] px-6`}>
       <Heading level={6} className="w-full text-center pb-4 text-zinc-400 border-b">
-        {program.title}
+        {exercise.title}
       </Heading>
-      <Heading level={1} className="text-center">
-        Available Workouts
-      </Heading>
-      <div className="w-full flex flex-col items-stretch gap-4">
-        {workouts.map((workout) => (
-          <TransitionLink key={workout.title} href={`/workouts/${workout.id}`}>
-            <WorkoutCard workout={workout} />
-          </TransitionLink>
-        ))}
-      </div>
     </main>
   )
 }

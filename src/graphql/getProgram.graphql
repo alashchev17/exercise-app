@@ -1,33 +1,37 @@
 query getProgram($programId: ID!) {
-    program(where: {id: $programId}) {
+  program(where: { id: $programId }) {
+    id
+    title
+    description
+    image {
+      fileName
+      url
+    }
+    workouts {
+      id
+      title
+      description
+      bodyPart
+      image {
+        fileName
+        url
+      }
+      exercises {
+        id
         title
         description
+        duration
+        repetitions
+        steps {
+          id
+          title
+        }
         image {
-            fileName
-            url
+          fileName
+          url
         }
-        workouts {
-            title
-            description
-            bodyPart
-            image {
-                fileName
-                url
-            }
-            exercises {
-                title
-                description
-                duration
-                repetitions
-                steps {
-                    title
-                }
-                image {
-                    fileName
-                    url
-                }
-                videoUrl
-            }
-        }
+        videoUrl
+      }
     }
+  }
 }

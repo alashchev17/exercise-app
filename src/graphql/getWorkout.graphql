@@ -1,5 +1,5 @@
-query getWorkouts {
-  workouts {
+query getWorkout($workoutId: ID!) {
+  workout(where: { id: $workoutId }) {
     id
     title
     description
