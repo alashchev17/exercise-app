@@ -9,55 +9,64 @@ interface TimerProps {
 }
 
 export const Timer = ({ countStart, onFinished }: TimerProps) => {
-  const [count, { startCountdown, stopCountdown }] = useCountdown({
+  const [count, { startCountdown, stopCountdown, resetCountdown }] = useCountdown({
     countStart,
-    intervalMs: 1000,
+    intervalMs: 100,
     countStop: 0,
   })
 
-  const [timerHeight, setTimerHeight] = useState(300)
+  const [isStarted, setIsStarted] = useState(false)
 
-  useEffect(() => {
-    const handleResize = () => {
-      setTimerHeight(Number(((window.innerWidth / 100) * 60).toFixed(0)))
-    }
+  const handleTimerStart = () => {
+    startCountdown()
+    setIsStarted(true)
+  }
 
-    window.addEventListener('resize', handleResize)
-    handleResize()
-    return () => {
-      window.removeEventListener('resize', handleResize)
-    }
-  }, [])
+  const handleTimerPause = () => {
+    stopCountdown()
+    setIsStarted(false)
+  }
 
   useEffect(() => {
     let timeoutID: NodeJS.Timeout
     if (count === 0) {
       timeoutID = setTimeout(() => {
+        resetCountdown()
+        setIsStarted(false)
         onFinished()
-        console.log(`[INFO]: Timer finished`)
       }, 1000)
     }
 
     return () => {
       clearTimeout(timeoutID)
     }
-  }, [count, onFinished])
+  }, [count, onFinished, resetCountdown])
 
   return (
     <div className="flex flex-col items-center gap-4">
       <div
-        className="flex w-[65%] items-center justify-center rounded-[50%] border-8 border-orange-500"
+        className="flex w-[40%] items-center justify-center rounded-[50%] border-8 border-orange-500"
         style={{
-          height: `${timerHeight}px`,
+          aspectRatio: '1',
         }}
       >
-        <p className="text-black text-6xl font-semibold">{count}s</p>
+        <p className="text-black text-4xl font-semibold">{count}s</p>
       </div>
       <div className="flex items-center gap-4">
-        <button className="px-6 py-4 bg-zinc-800 text-white font-semibold shadow-lg" onClick={startCountdown}>
+        <button
+          className="px-6 py-4 bg-zinc-800 text-white font-semibold shadow-lg aria-disabled:bg-gray-400 aria-disabled:text-gray-800 transition-all"
+          aria-disabled={isStarted}
+          disabled={isStarted}
+          onClick={handleTimerStart}
+        >
           Start
         </button>
-        <button className="px-6 py-4 bg-zinc-800 text-white font-semibold shadow-lg" onClick={stopCountdown}>
+        <button
+          className="px-6 py-4 bg-zinc-800 text-white font-semibold shadow-lg aria-disabled:bg-gray-400 aria-disabled:text-gray-800 transition-all"
+          aria-disabled={!isStarted}
+          disabled={!isStarted}
+          onClick={handleTimerPause}
+        >
           Pause
         </button>
       </div>

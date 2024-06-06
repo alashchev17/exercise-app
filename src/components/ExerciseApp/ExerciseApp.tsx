@@ -41,6 +41,7 @@ export const ExerciseApp = ({ exercises, workoutId }: ExerciseAppProps) => {
     slidesToScroll: 1,
     horizontal: true,
     arrows: false,
+    swipe: false,
     afterChange: (currentSlide: number) => {
       setCurrentSlide(currentSlide + 1)
     },
@@ -60,7 +61,6 @@ export const ExerciseApp = ({ exercises, workoutId }: ExerciseAppProps) => {
 
   const handleNextSlide = useCallback(() => {
     if (sliderRef) {
-      console.log(`[INFO]: going next on slides`)
       sliderRef.current?.slickNext()
     }
   }, [])
@@ -68,7 +68,6 @@ export const ExerciseApp = ({ exercises, workoutId }: ExerciseAppProps) => {
   const handlePrevSlide = () => {
     if (sliderRef) {
       if (currentSlide !== 1) {
-        console.log(`[INFO]: going back on slides`)
         sliderRef.current?.slickPrev()
         setCurrentSlide((prev) => prev - 1)
       }
@@ -76,43 +75,46 @@ export const ExerciseApp = ({ exercises, workoutId }: ExerciseAppProps) => {
   }
 
   return (
-    <div className={isWorkoutFinished ? 'h-screen py-4 flex flex-col items-center justify-center' : ''}>
-      {isWorkoutFinished ? (
-        <div className="h-full flex flex-col justify-center gap-20 items-center">
-          <Heading level={1} className="w-full text-center pb-4">
-            Workout is completed!
-          </Heading>
-          <FinishedIcon fill={'#0AD84B'} width={200} height={200} />
-          <TransitionLink
-            label="Return to Workout"
-            href={`/workouts/${workoutId}`}
-            className="w-[calc(100%-2rem)] px-6 py-4 bg-zinc-800 text-white font-semibold shadow-lg z-10"
-          />
-        </div>
-      ) : (
-        <div className="slider-container">
-          <Slider {...settings} ref={sliderRef}>
-            {exercisesSlides.map((exercise) =>
-              exercise.exercise.isBreak ? (
-                <Break key={`${exercise.exercise.id}_break`} exercise={exercise} countForTimer={BREAK_COUNT} onFinished={handleNextSlide} />
-              ) : (
-                <Exercise
-                  key={exercise.exercise.id}
-                  exercise={exercise}
-                  countForTimer={exercise.exercise.duration!}
-                  onFinished={handleNextSlide}
-                />
-              )
-            )}
-          </Slider>
+    <div className={isWorkoutFinished ? 'max-h-screen overflow-hidden py-4 flex flex-col items-center justify-center' : ''}>
+      <div className="slider-container">
+        <Slider {...settings} ref={sliderRef}>
+          {exercisesSlides.map((exercise) =>
+            exercise.exercise.isBreak ? (
+              <Break key={`${exercise.exercise.id}_break`} exercise={exercise} countForTimer={BREAK_COUNT} onFinished={handleNextSlide} />
+            ) : (
+              <Exercise
+                key={exercise.exercise.id}
+                exercise={exercise}
+                countForTimer={exercise.exercise.duration!}
+                onFinished={handleNextSlide}
+              />
+            )
+          )}
+        </Slider>
+        {!isWorkoutFinished && (
           <SliderControls
             next={handleNextSlide}
             prev={handlePrevSlide}
             prevDisabled={currentSlide === 1 || currentSlide === amountOfSlides}
             nextDisabled={currentSlide === amountOfSlides}
           />
-        </div>
-      )}
+        )}
+      </div>
+      <div
+        className={`top-0 left-0 fixed h-screen w-screen flex flex-col justify-center gap-20 items-center transition-all ease-in-out duration-500 ${
+          isWorkoutFinished ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-[-100%]'
+        }`}
+      >
+        <Heading level={1} className="w-full text-center pb-4">
+          Workout is completed!
+        </Heading>
+        <FinishedIcon fill={'#0AD84B'} width={200} height={200} />
+        <TransitionLink
+          label="Return to Workout"
+          href={`/workouts/${workoutId}`}
+          className="inline-block w-[calc(100%-2rem)] px-6 py-4 bg-zinc-800 text-white font-semibold shadow-lg z-10"
+        />
+      </div>
     </div>
   )
 }
