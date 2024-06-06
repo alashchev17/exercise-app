@@ -47,7 +47,7 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
   }
 
   return (
-    <main className={`min-h-[100dvh] pt-[2rem] px-6`}>
+    <main className={`min-h-[100dvh]`}>
       <ExerciseApp exercise={currentExercise} exercises={exercises} workoutId={params.workoutId} />
     </main>
   )

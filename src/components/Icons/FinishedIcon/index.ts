@@ -1,0 +1,1 @@
+export { FinishedIcon } from './FinishedIcon'

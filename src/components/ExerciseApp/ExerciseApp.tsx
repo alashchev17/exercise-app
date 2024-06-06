@@ -1,12 +1,20 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useCountdown } from 'usehooks-ts'
+import 'slick-carousel/slick/slick.css'
+import 'slick-carousel/slick/slick-theme.css'
+
+import React, { useCallback, useRef } from 'react'
+import Slider from 'react-slick'
+import { useState } from 'react'
 import type { GetWorkoutQuery } from '@/generated/graphql'
 
 import { TransitionLink } from '@/components/UI/TransitionLink'
 import { Heading } from '@/components/UI/Heading'
-import { Timer } from '@/components/UI/Timer'
+import { Exercise } from './Exercise'
+import { Break } from './Break'
+import { ExerciseWithBreak, mapExercisesToSlides } from '@/lib/utils'
+import { SliderControls } from './SliderControls'
+import { FinishedIcon } from '../Icons/FinishedIcon'
 
 interface ExerciseAppProps {
   exercise: NonNullable<GetWorkoutQuery['workout']>['exercises'][number]
@@ -14,144 +22,90 @@ interface ExerciseAppProps {
   workoutId: string
 }
 
+const BREAK_COUNT = 15
+
 export const ExerciseApp = ({ exercises, workoutId }: ExerciseAppProps) => {
-  const [currentSlide, setCurrentSlide] = useState<number>(0)
-  const amountOfSlides = exercises.length
-  const [currentIteration, setCurrentIteration] = useState(1)
-  const [isStarted, setIsStarted] = useState(false)
-  const [isPaused, setIsPaused] = useState(false)
-  const [isFinished, setIsFinished] = useState(false)
-  const [isBreak, setIsBreak] = useState(false)
   // eslint-disable-next-line no-unused-vars
-  const [breakCount, setBreakCount] = useState(15) // going to implement breakCount setup in settings here
   const [isWorkoutFinished, setIsWorkoutFinished] = useState(false)
 
-  const [count, { startCountdown, stopCountdown, resetCountdown }] = useCountdown({
-    // can't figure out why is my countStart taking breakCount on !isBreak and not on isBreak as it should take
-    countStart: isBreak ? breakCount : exercises[currentSlide].duration ? exercises[currentSlide].duration! : 10,
-    intervalMs: 10,
-    countStop: 0,
-  })
+  const exercisesSlides: ExerciseWithBreak[] = mapExercisesToSlides(exercises)
 
-  const handleTimerStart = () => {
-    startCountdown()
-    setIsStarted(true)
-    setIsPaused(false)
+  const [currentSlide, setCurrentSlide] = useState(1)
+  const amountOfSlides = exercisesSlides.length
+
+  let sliderRef = useRef<Slider | null>(null)
+
+  const settings = {
+    infinite: false,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    horizontal: true,
+    arrows: false,
   }
 
-  const handleTimerPause = () => {
-    stopCountdown()
-    setIsPaused(true)
-  }
-
-  const handleTimerResume = () => {
-    startCountdown()
-    setIsPaused(false)
-  }
-
-  useEffect(() => {
-    let timeoutID: NodeJS.Timeout
-    if (count === 0) {
-      setIsFinished(true)
-      timeoutID = setTimeout(() => {
-        setIsStarted(false)
-        setIsPaused(false)
-        setIsFinished(false)
-
-        if (!isBreak) {
-          setIsBreak(true)
-          resetCountdown()
-          return undefined
-        }
-        resetCountdown()
-        setIsBreak(false)
-        if (currentIteration === exercises[currentSlide].repetitions) {
-          if (currentSlide === amountOfSlides - 1) {
-            setIsWorkoutFinished(true)
-            setIsStarted(false)
-            setIsPaused(false)
-            setIsFinished(false)
-            return undefined
-          }
-          setCurrentSlide((prev) => prev + 1)
-          setCurrentIteration(1)
-          return undefined
-        }
-        setCurrentIteration((prev) => prev + 1)
-      }, 1000)
+  const handleNextSlide = useCallback(() => {
+    if (sliderRef) {
+      console.log(`[INFO]: currentSlide: ${currentSlide}`)
+      console.log(`[INFO]: amountOfSlides: ${amountOfSlides}`)
+      if (currentSlide !== amountOfSlides) {
+        console.log(`[INFO]: going next on slides`)
+        sliderRef.current?.slickNext()
+        setCurrentSlide((prev) => prev + 1)
+        return
+      }
+      setIsWorkoutFinished(true)
+      setCurrentSlide(1)
     }
+  }, [currentSlide, amountOfSlides])
 
-    return () => {
-      clearTimeout(timeoutID)
+  const handlePrevSlide = () => {
+    if (sliderRef) {
+      if (currentSlide !== 1) {
+        console.log(`[INFO]: going back on slides`)
+        sliderRef.current?.slickPrev()
+        setCurrentSlide((prev) => prev - 1)
+      }
     }
-  }, [count, resetCountdown, isBreak, currentIteration, exercises, currentSlide, amountOfSlides])
-
-  const handleBackExercise = () => {
-    setCurrentIteration(1)
-    setCurrentSlide((prev) => prev - 1)
   }
-
-  const handleNextExercise = () => {
-    setCurrentIteration(1)
-    setCurrentSlide((prev) => prev + 1)
-  }
-
-  useEffect(() => {
-    console.log(`[INFO]: isBreak: ${isBreak}`)
-  }, [isBreak])
 
   return (
-    <div className="flex flex-col items-center justify-center gap-6">
+    <div className={isWorkoutFinished ? 'h-screen py-4 flex flex-col items-center justify-center' : ''}>
       {isWorkoutFinished ? (
-        <div className="h-full flex flex-col justify-between">
+        <div className="h-full flex flex-col justify-center gap-20 items-center">
           <Heading level={1} className="w-full text-center pb-4">
             Workout is completed!
           </Heading>
+          <FinishedIcon fill={'#0AD84B'} width={200} height={200} />
           <TransitionLink
             label="Return to Workout"
             href={`/workouts/${workoutId}`}
-            className="fixed left-4 bottom-4 w-[calc(100%-2rem)] px-6 py-4 bg-zinc-800 text-white font-semibold shadow-lg z-10"
+            className="w-[calc(100%-2rem)] px-6 py-4 bg-zinc-800 text-white font-semibold shadow-lg z-10"
           />
         </div>
       ) : (
-        <>
-          <Heading level={2} className="w-full text-center pb-4 text-zinc-500 border-b">
-            {exercises[currentSlide].title}
-          </Heading>
-          <Heading level={3} className="w-full text-center pb-4">
-            {isBreak ? "It's time for a break!" : "It's time to focus on exercise!"}
-          </Heading>
-          <Timer
-            count={count}
-            start={handleTimerStart}
-            pause={handleTimerPause}
-            resume={handleTimerResume}
-            isStarted={isStarted}
-            isPaused={isPaused}
-            isFinished={isFinished}
+        <div className="slider-container">
+          <Slider {...settings} ref={sliderRef}>
+            {exercisesSlides.map((exercise) =>
+              exercise.exercise.isBreak ? (
+                <Break key={`${exercise.exercise.id}_break`} exercise={exercise} countForTimer={BREAK_COUNT} onFinished={handleNextSlide} />
+              ) : (
+                <Exercise
+                  key={exercise.exercise.id}
+                  exercise={exercise}
+                  countForTimer={exercise.exercise.duration!}
+                  onFinished={handleNextSlide}
+                />
+              )
+            )}
+          </Slider>
+          <SliderControls
+            next={handleNextSlide}
+            prev={handlePrevSlide}
+            prevDisabled={currentSlide === 1}
+            nextDisabled={currentSlide === amountOfSlides}
           />
-          <Heading level={3} className="w-full text-center pb-4">
-            Current set: {currentIteration}
-          </Heading>
-          <div className="flex items-stretch gap-4">
-            <button
-              className="max-w-[calc(50%-8px)] px-6 py-4 bg-zinc-800 text-white font-semibold shadow-lg aria-disabled:bg-gray-400 aria-disabled:text-gray-800"
-              aria-disabled={currentSlide === 0 || !isBreak}
-              disabled={currentSlide === 0 || !isBreak}
-              onClick={handleBackExercise}
-            >
-              Previous Exercise
-            </button>
-            <button
-              className="max-w-[calc(50%-8px)] px-6 py-4 bg-zinc-800 text-white font-semibold shadow-lg aria-disabled:bg-gray-400 aria-disabled:text-gray-800"
-              aria-disabled={currentSlide === amountOfSlides - 1 || !isBreak}
-              disabled={currentSlide === amountOfSlides - 1 || !isBreak}
-              onClick={handleNextExercise}
-            >
-              Next Exercise
-            </button>
-          </div>
-        </>
+        </div>
       )}
     </div>
   )
