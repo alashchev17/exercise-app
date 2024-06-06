@@ -29,7 +29,7 @@ export const ExerciseApp = ({ exercises, workoutId }: ExerciseAppProps) => {
   const [count, { startCountdown, stopCountdown, resetCountdown }] = useCountdown({
     // can't figure out why is my countStart taking breakCount on !isBreak and not on isBreak as it should take
     countStart: isBreak ? breakCount : exercises[currentSlide].duration ? exercises[currentSlide].duration! : 10,
-    intervalMs: 1000,
+    intervalMs: 10,
     countStop: 0,
   })
 
@@ -96,6 +96,10 @@ export const ExerciseApp = ({ exercises, workoutId }: ExerciseAppProps) => {
     setCurrentSlide((prev) => prev + 1)
   }
 
+  useEffect(() => {
+    console.log(`[INFO]: isBreak: ${isBreak}`)
+  }, [isBreak])
+
   return (
     <div className="flex flex-col items-center justify-center gap-6">
       {isWorkoutFinished ? (
@@ -133,6 +137,7 @@ export const ExerciseApp = ({ exercises, workoutId }: ExerciseAppProps) => {
             <button
               className="max-w-[calc(50%-8px)] px-6 py-4 bg-zinc-800 text-white font-semibold shadow-lg aria-disabled:bg-gray-400 aria-disabled:text-gray-800"
               aria-disabled={currentSlide === 0 || !isBreak}
+              disabled={currentSlide === 0 || !isBreak}
               onClick={handleBackExercise}
             >
               Previous Exercise
@@ -140,6 +145,7 @@ export const ExerciseApp = ({ exercises, workoutId }: ExerciseAppProps) => {
             <button
               className="max-w-[calc(50%-8px)] px-6 py-4 bg-zinc-800 text-white font-semibold shadow-lg aria-disabled:bg-gray-400 aria-disabled:text-gray-800"
               aria-disabled={currentSlide === amountOfSlides - 1 || !isBreak}
+              disabled={currentSlide === amountOfSlides - 1 || !isBreak}
               onClick={handleNextExercise}
             >
               Next Exercise
