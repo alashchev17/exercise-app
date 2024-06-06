@@ -30,9 +30,16 @@ export const Timer = ({ countStart, onFinished }: TimerProps) => {
   }, [])
 
   useEffect(() => {
+    let timeoutID: NodeJS.Timeout
     if (count === 0) {
-      onFinished()
-      console.log(`[INFO]: Timer finished`)
+      timeoutID = setTimeout(() => {
+        onFinished()
+        console.log(`[INFO]: Timer finished`)
+      }, 1000)
+    }
+
+    return () => {
+      clearTimeout(timeoutID)
     }
   }, [count, onFinished])
 

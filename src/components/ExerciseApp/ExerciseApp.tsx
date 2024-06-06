@@ -25,7 +25,6 @@ interface ExerciseAppProps {
 const BREAK_COUNT = 15
 
 export const ExerciseApp = ({ exercises, workoutId }: ExerciseAppProps) => {
-  // eslint-disable-next-line no-unused-vars
   const [isWorkoutFinished, setIsWorkoutFinished] = useState(false)
 
   const exercisesSlides: ExerciseWithBreak[] = mapExercisesToSlides(exercises)
@@ -48,6 +47,12 @@ export const ExerciseApp = ({ exercises, workoutId }: ExerciseAppProps) => {
     beforeChange: (currentSlide: number) => {
       if (currentSlide + 1 === amountOfSlides) {
         setIsWorkoutFinished(true)
+        const amountOfDoneWorkouts = localStorage.getItem(workoutId)
+        if (!amountOfDoneWorkouts) {
+          localStorage.setItem(workoutId, '1')
+        } else {
+          localStorage.setItem(workoutId, `${Number(amountOfDoneWorkouts) + 1}`)
+        }
         setCurrentSlide(1)
       }
     },
@@ -103,7 +108,7 @@ export const ExerciseApp = ({ exercises, workoutId }: ExerciseAppProps) => {
           <SliderControls
             next={handleNextSlide}
             prev={handlePrevSlide}
-            prevDisabled={currentSlide === 1}
+            prevDisabled={currentSlide === 1 || currentSlide === amountOfSlides}
             nextDisabled={currentSlide === amountOfSlides}
           />
         </div>

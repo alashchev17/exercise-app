@@ -53,7 +53,7 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
       </Heading>
       <div className="w-full flex flex-col items-stretch gap-4">
         {workouts.map((workout) => (
-          <TransitionLink key={workout.title} href={`/workouts/${workout.id}`}>
+          <TransitionLink key={workout.id} href={`/workouts/${workout.id}`}>
             <WorkoutCard workout={workout} />
           </TransitionLink>
         ))}
