@@ -42,22 +42,23 @@ export const ExerciseApp = ({ exercises, workoutId }: ExerciseAppProps) => {
     slidesToScroll: 1,
     horizontal: true,
     arrows: false,
+    afterChange: (currentSlide: number) => {
+      setCurrentSlide(currentSlide + 1)
+    },
+    beforeChange: (currentSlide: number) => {
+      if (currentSlide + 1 === amountOfSlides) {
+        setIsWorkoutFinished(true)
+        setCurrentSlide(1)
+      }
+    },
   }
 
   const handleNextSlide = useCallback(() => {
     if (sliderRef) {
-      console.log(`[INFO]: currentSlide: ${currentSlide}`)
-      console.log(`[INFO]: amountOfSlides: ${amountOfSlides}`)
-      if (currentSlide !== amountOfSlides) {
-        console.log(`[INFO]: going next on slides`)
-        sliderRef.current?.slickNext()
-        setCurrentSlide((prev) => prev + 1)
-        return
-      }
-      setIsWorkoutFinished(true)
-      setCurrentSlide(1)
+      console.log(`[INFO]: going next on slides`)
+      sliderRef.current?.slickNext()
     }
-  }, [currentSlide, amountOfSlides])
+  }, [])
 
   const handlePrevSlide = () => {
     if (sliderRef) {

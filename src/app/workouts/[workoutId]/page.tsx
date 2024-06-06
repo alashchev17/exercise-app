@@ -43,8 +43,6 @@ export default async function WorkoutPage({ params }: ProgramPageProps) {
 
   const exercises = workout.exercises
 
-  console.log(exercises)
-
   return (
     <main className={`flex min-h-[calc(100dvh-70px)] flex-col items-center gap-6 py-[calc(2rem+70px)] px-6`}>
       <Heading level={6} className="w-full text-center pb-4 text-zinc-400 border-b">

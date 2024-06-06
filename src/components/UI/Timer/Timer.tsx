@@ -11,7 +11,7 @@ interface TimerProps {
 export const Timer = ({ countStart, onFinished }: TimerProps) => {
   const [count, { startCountdown, stopCountdown }] = useCountdown({
     countStart,
-    intervalMs: 100,
+    intervalMs: 1000,
     countStop: 0,
   })
 
