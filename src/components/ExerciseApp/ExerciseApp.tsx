@@ -26,6 +26,7 @@ const BREAK_COUNT = 15
 
 export const ExerciseApp = ({ exercises, workoutId }: ExerciseAppProps) => {
   const [isWorkoutFinished, setIsWorkoutFinished] = useState(false)
+  const [isTimerStarted, setIsTimerStarted] = useState(false)
 
   const exercisesSlides: ExerciseWithBreak[] = mapExercisesToSlides(exercises)
 
@@ -80,13 +81,22 @@ export const ExerciseApp = ({ exercises, workoutId }: ExerciseAppProps) => {
         <Slider {...settings} ref={sliderRef}>
           {exercisesSlides.map((exercise) =>
             exercise.exercise.isBreak ? (
-              <Break key={`${exercise.exercise.id}_break`} exercise={exercise} countForTimer={BREAK_COUNT} onFinished={handleNextSlide} />
+              <Break
+                key={`${exercise.exercise.id}_break`}
+                exercise={exercise}
+                countForTimer={BREAK_COUNT}
+                onFinished={handleNextSlide}
+                isTimerStarted={isTimerStarted}
+                setIsTimerStarted={setIsTimerStarted}
+              />
             ) : (
               <Exercise
                 key={exercise.exercise.id}
                 exercise={exercise}
                 countForTimer={exercise.exercise.duration!}
                 onFinished={handleNextSlide}
+                isTimerStarted={isTimerStarted}
+                setIsTimerStarted={setIsTimerStarted}
               />
             )
           )}
@@ -95,8 +105,8 @@ export const ExerciseApp = ({ exercises, workoutId }: ExerciseAppProps) => {
           <SliderControls
             next={handleNextSlide}
             prev={handlePrevSlide}
-            prevDisabled={currentSlide === 1 || currentSlide === amountOfSlides}
-            nextDisabled={currentSlide === amountOfSlides}
+            prevDisabled={currentSlide === 1 || currentSlide === amountOfSlides || isTimerStarted}
+            nextDisabled={currentSlide === amountOfSlides || isTimerStarted}
           />
         )}
       </div>

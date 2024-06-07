@@ -1,15 +1,18 @@
 import { Heading } from '@/components/UI/Heading'
 import { Timer } from '@/components/UI/Timer'
 import type { ExerciseWithBreak } from '@/lib/utils'
-import { Video } from '../UI/Video'
+import { Video } from '@/components/Video'
+import { Dispatch, SetStateAction } from 'react'
 
 interface ExerciseProps {
   exercise: ExerciseWithBreak
   countForTimer: number
   onFinished: () => void
+  isTimerStarted: boolean
+  setIsTimerStarted: Dispatch<SetStateAction<boolean>>
 }
 
-export const Exercise = ({ exercise, countForTimer, onFinished }: ExerciseProps) => {
+export const Exercise = ({ exercise, countForTimer, onFinished, isTimerStarted, setIsTimerStarted }: ExerciseProps) => {
   const exerciseToRender = exercise.exercise
   return (
     <div className="py-4 flex flex-col gap-8 w-screen min-h-screen">
@@ -19,8 +22,10 @@ export const Exercise = ({ exercise, countForTimer, onFinished }: ExerciseProps)
       <Heading level={3} className="w-full text-center">
         {"It's time to focus on exercise!"}
       </Heading>
-      <Video videoUrl={exerciseToRender.videoUrl!} />
-      <Timer countStart={countForTimer} onFinished={onFinished} />
+      <div className="flex items-center justify-center">
+        <Video videoId={exerciseToRender.videoUrl!} />
+      </div>
+      <Timer countStart={countForTimer} onFinished={onFinished} isTimerStarted={isTimerStarted} setIsTimerStarted={setIsTimerStarted} />
       <Heading level={3} className="w-full text-center pb-20">
         Current set: {exerciseToRender.currentSet}
       </Heading>

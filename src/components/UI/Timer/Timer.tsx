@@ -1,30 +1,30 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect } from 'react'
 import { useCountdown } from 'usehooks-ts'
 
 interface TimerProps {
   countStart: number
   onFinished: () => void
+  isTimerStarted: boolean
+  setIsTimerStarted: Dispatch<SetStateAction<boolean>>
 }
 
-export const Timer = ({ countStart, onFinished }: TimerProps) => {
+export const Timer = ({ countStart, onFinished, setIsTimerStarted, isTimerStarted }: TimerProps) => {
   const [count, { startCountdown, stopCountdown, resetCountdown }] = useCountdown({
     countStart,
     intervalMs: 1000,
     countStop: 0,
   })
 
-  const [isStarted, setIsStarted] = useState(false)
-
   const handleTimerStart = () => {
     startCountdown()
-    setIsStarted(true)
+    setIsTimerStarted(true)
   }
 
   const handleTimerPause = () => {
     stopCountdown()
-    setIsStarted(false)
+    setIsTimerStarted(false)
   }
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export const Timer = ({ countStart, onFinished }: TimerProps) => {
     if (count === 0) {
       timeoutID = setTimeout(() => {
         resetCountdown()
-        setIsStarted(false)
+        setIsTimerStarted(false)
         onFinished()
       }, 1000)
     }
@@ -40,7 +40,7 @@ export const Timer = ({ countStart, onFinished }: TimerProps) => {
     return () => {
       clearTimeout(timeoutID)
     }
-  }, [count, onFinished, resetCountdown])
+  }, [count, onFinished, resetCountdown, setIsTimerStarted])
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -54,17 +54,17 @@ export const Timer = ({ countStart, onFinished }: TimerProps) => {
       </div>
       <div className="flex items-center gap-4">
         <button
-          className="px-6 py-4 bg-zinc-800 text-white font-semibold shadow-lg aria-disabled:bg-gray-400 aria-disabled:text-gray-800 transition-all"
-          aria-disabled={isStarted}
-          disabled={isStarted}
+          className="px-6 py-4 bg-zinc-800 text-white font-semibold shadow-lg aria-disabled:bg-gray-300 aria-disabled:text-gray-800 transition-all"
+          aria-disabled={isTimerStarted}
+          disabled={isTimerStarted}
           onClick={handleTimerStart}
         >
           Start
         </button>
         <button
-          className="px-6 py-4 bg-zinc-800 text-white font-semibold shadow-lg aria-disabled:bg-gray-400 aria-disabled:text-gray-800 transition-all"
-          aria-disabled={!isStarted}
-          disabled={!isStarted}
+          className="px-6 py-4 bg-zinc-800 text-white font-semibold shadow-lg aria-disabled:bg-gray-300 aria-disabled:text-gray-800 transition-all"
+          aria-disabled={!isTimerStarted}
+          disabled={!isTimerStarted}
           onClick={handleTimerPause}
         >
           Pause
